@@ -132,6 +132,7 @@ const listOfPositions = [
           [nzVirtualMaxBufferPx]="nzVirtualMaxBufferPx"
           [nzVirtualMinBufferPx]="nzVirtualMinBufferPx"
           [nzVirtualHeight]="nzVirtualHeight"
+          [nzSearchFunc]="nzSearchFunc"
           (nzExpandChange)="onExpandedKeysChange($event)"
           (nzClick)="nzTreeClick.emit($event)"
           (nzCheckedKeysChange)="updateSelectedNodes()"
@@ -329,6 +330,7 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
   get treeTemplate(): TemplateRef<{ $implicit: NzTreeNode; origin: NzTreeNodeOptions }> {
     return this.nzTreeTemplate || this.nzTreeTemplateChild;
   }
+  @Input() nzSearchFunc?: (node: NzTreeNodeOptions) => boolean;
 
   prefixCls: string = 'ant-select';
   statusCls: NgClassInterface = {};
@@ -342,6 +344,7 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
   isNotFound = false;
   focused = false;
   inputValue = '';
+  inputValueLowCase?: string;
   dropDownPosition: 'top' | 'center' | 'bottom' = 'bottom';
   selectedNodes: NzTreeNode[] = [];
   expandedKeys: string[] = [];
@@ -430,6 +433,7 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
         this.isComposing = isComposing;
         if (!isComposing) {
           this.inputValue = searchValue;
+          this.inputValueLowCase = !searchValue ? '' : searchValue.toLowerCase();
           this.updatePosition();
         }
       });
@@ -557,6 +561,7 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
     this.onTouched();
     this.nzOpen = false;
     this.inputValue = '';
+    this.inputValueLowCase = '';
     this.isNotFound = false;
     this.nzOpenChange.emit(this.nzOpen);
     this.cdr.markForCheck();
@@ -637,6 +642,7 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
         this.value = [...value];
         if (this.nzShowSearch || this.isMultiple) {
           this.inputValue = '';
+          this.inputValueLowCase = '';
           this.isNotFound = false;
         }
         if (this.isMultiple) {
